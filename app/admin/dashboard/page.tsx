@@ -177,20 +177,6 @@ export default function AdminDashboard() {
     router.push("/admin");
   };
 
-  // 图片上传处理（转 base64）
-  const handleImageUpload = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    onResult: (base64: string) => void
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      onResult(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
   if (!data) {
     return (
       <div className="admin-dashboard">
@@ -618,12 +604,22 @@ export default function AdminDashboard() {
                   />
                   <div>
                     <div className="subsection-title">右侧图片</div>
-                    <div className="subsection-desc">上传截图替换默认播放器 mockup</div>
+                    <div className="subsection-desc">填写图片链接（图床 URL）替换默认播放器 mockup</div>
                   </div>
                 </div>
-                <div className="image-uploader">
-                  {data.hero.heroImage ? (
+                <div className="form-group" style={{ marginTop: 12 }}>
+                  <label>图片链接</label>
+                  <input
+                    type="text"
+                    placeholder="https://example.com/hero.png（留空使用默认 mockup）"
+                    value={data.hero.heroImage || ""}
+                    onChange={(e) =>
+                      updateField("hero", "heroImage", e.target.value.trim())
+                    }
+                  />
+                  {data.hero.heroImage && (
                     <div className="image-preview">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={data.hero.heroImage} alt="Hero 预览" />
                       <button
                         className="remove-image-btn"
@@ -632,24 +628,6 @@ export default function AdminDashboard() {
                         移除图片
                       </button>
                     </div>
-                  ) : (
-                    <label className="image-upload-box">
-                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="17 8 12 3 7 8" />
-                        <line x1="12" y1="3" x2="12" y2="15" />
-                      </svg>
-                      <span>点击上传 Hero 截图</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) =>
-                          handleImageUpload(e, (base64) =>
-                            updateField("hero", "heroImage", base64)
-                          )
-                        }
-                      />
-                    </label>
                   )}
                 </div>
               </div>
@@ -1008,8 +986,24 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                         <div className="screenshot-upload">
-                          {img ? (
+                          <div className="form-group">
+                            <label>截图链接</label>
+                            <input
+                              type="text"
+                              placeholder="https://example.com/shot.png"
+                              value={img || ""}
+                              onChange={(e) => {
+                                const newTabImages = {
+                                  ...(data.screenshots.tabImages || {}),
+                                  [tab.id]: e.target.value.trim(),
+                                };
+                                updateField("screenshots", "tabImages", newTabImages);
+                              }}
+                            />
+                          </div>
+                          {img && (
                             <div className="screenshot-upload-preview">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={img} alt={tab.label} />
                               <button
                                 className="remove-image-btn"
@@ -1024,23 +1018,6 @@ export default function AdminDashboard() {
                                 移除
                               </button>
                             </div>
-                          ) : (
-                            <label className="screenshot-upload-box">
-                              <span>上传截图</span>
-                              <input
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) =>
-                                  handleImageUpload(e, (base64) => {
-                                    const newTabImages = {
-                                      ...(data.screenshots.tabImages || {}),
-                                      [tab.id]: base64,
-                                    };
-                                    updateField("screenshots", "tabImages", newTabImages);
-                                  })
-                                }
-                              />
-                            </label>
                           )}
                         </div>
                         <button

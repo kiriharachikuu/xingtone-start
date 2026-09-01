@@ -181,27 +181,25 @@ export const defaultSiteData: SiteData = {
       {
         title: "项目",
         links: [
-          { label: "Releases", href: "#" },
-          { label: "Issues", href: "#" },
-          { label: "README", href: "#" },
-          { label: "Changelog", href: "#" },
+          { label: "源码仓库", href: "https://github.com/XT-Music" },
+          { label: "问题反馈", href: "https://github.com/XT-Music" },
+          { label: "版本下载", href: "#download" },
         ],
       },
       {
         title: "相关资源",
         links: [
-          { label: "XT-Music 前端", href: "#" },
-          { label: "XT-Music 后端", href: "#" },
-          { label: "XT-Music 桌面端", href: "#" },
-          { label: "文档", href: "#" },
+          { label: "XT-Music 组织", href: "https://github.com/XT-Music" },
+          { label: "官网后台", href: "/admin" },
         ],
       },
       {
         title: "法律",
         links: [
-          { label: "MIT 许可证", href: "#" },
-          { label: "用户协议", href: "#" },
-          { label: "隐私政策", href: "#" },
+          { label: "用户协议", href: "/legal/user-agreement" },
+          { label: "隐私与数据", href: "/legal/user-agreement" },
+          { label: "免责声明", href: "/legal/disclaimer" },
+          { label: "开源许可", href: "/legal/open-source" },
         ],
       },
     ],
@@ -210,10 +208,7 @@ export const defaultSiteData: SiteData = {
       { label: "GitHub", href: "https://github.com/XT-Music" },
       { label: "Built with Next.js", href: "https://nextjs.org" },
     ],
-    legalLinks: [
-      { label: "服务条款", href: "#terms" },
-      { label: "隐私政策", href: "#privacy" },
-      { label: "用户协议", href: "#agreement" },
-    ],
+    // 法律条款已并入上方「法律」列与独立 /legal/* 页面，不再在底部重复展示
+    legalLinks: [],
   },
 };

@@ -128,13 +128,50 @@ export async function saveSiteData(data: SiteData): Promise<void> {
 }
 
 /**
+ * 旧数据迁移：
+ * 1. 清掉历史上以 base64 内联保存的大图（会让数据/页面异常臃肿），图片改为图床 URL；
+ *    清空后前端回落到默认 mockup，用户可在后台重新填写图片链接。
+ * 2. 旧版页脚存在 # 死链与底部重复法律链接，整体替换为默认页脚（链接指向 /legal/* 与 GitHub）。
+ */
+function migrate(data: Partial<SiteData>, defaults: SiteData): Partial<SiteData> {
+  const next: Partial<SiteData> = { ...data };
+
+  const strip = (v: unknown): string =>
+    typeof v === "string" && v.startsWith("data:image") ? "" : (v as string);
+
+  if (next.hero) {
+    next.hero = { ...next.hero, heroImage: strip(next.hero.heroImage) };
+  }
+  if (next.screenshots?.tabImages) {
+    const tabImages: Record<string, string> = {};
+    for (const [k, v] of Object.entries(next.screenshots.tabImages)) {
+      const sv = strip(v);
+      if (sv) tabImages[k] = sv;
+    }
+    next.screenshots = { ...next.screenshots, tabImages };
+  }
+
+  // 旧页脚：存在重复法律链接或大量 # 死链时，直接采用默认页脚
+  const f = next.footer as { legalLinks?: unknown; columns?: { links?: { href?: string }[] }[] } | undefined;
+  const hasLegalRow = Array.isArray(f?.legalLinks) && (f!.legalLinks as unknown[]).length > 0;
+  const deadLinks =
+    f?.columns?.some((c) => c.links?.some((l) => l.href === "#")) ?? false;
+  if (hasLegalRow || deadLinks) {
+    next.footer = defaults.footer;
+  }
+
+  return next;
+}
+
+/**
  * 与默认数据合并：顶层对象字段浅合并、数组字段在缺失/为空时回退默认值，
  * 避免字段缺失导致前端渲染异常。
  */
 function mergeWithDefaults(
-  data: Partial<SiteData>,
+  raw: Partial<SiteData>,
   defaults: SiteData,
 ): SiteData {
+  const data = migrate(raw, defaults);
   return {
     nav: { ...defaults.nav, ...data.nav },
     hero: { ...defaults.hero, ...data.hero },
