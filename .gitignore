@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+.env.local
+.env.production
+.env
+data/site.json
+*.log
+.DS_Store
+*.tsbuildinfo
