@@ -6,6 +6,7 @@ import { Stats } from "@/components/Stats";
 import { Features } from "@/components/Features";
 import { Screenshots } from "@/components/Screenshots";
 import { Download } from "@/components/Download";
+import { About } from "@/components/About";
 import { Footer } from "@/components/Footer";
 
 // 动态渲染：每次请求实时读取 EdgeOne Blob（强一致），后台保存后立即生效。
@@ -30,6 +31,7 @@ export default async function HomePage() {
         />
         <Screenshots data={data.screenshots} />
         <Download data={data.download} versions={appVersions} />
+        <About />
       </main>
       <Footer data={data.footer} />
     </>

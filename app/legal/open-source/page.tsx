@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "XingTone 使用的开源软件与许可说明",
 };
 
-export const dynamic = "force-dynamic";
-
 export default function OpenSourcePage() {
   return (
     <LegalPage

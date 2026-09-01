@@ -1,13 +1,47 @@
 "use client";
 
+import { useRef, useState } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import type { HeroConfig } from "@/lib/types";
 
 type Props = {
   data: HeroConfig;
 };
 
+// 光标跟踪透视：鼠标在 visual 区域移动时，卡片做 3D tilt，
+// 并叠加一层随光标高亮的镜面光泽（glare），float-tag 带 translateZ 视差。
 export function Hero({ data }: Props) {
   const titleLines = data.title.split("\n").filter(Boolean);
+  const visualRef = useRef<HTMLDivElement>(null);
+  const [tilt, setTilt] = useState({ rx: 0, ry: 0 });
+  const [glare, setGlare] = useState({ x: 50, y: 50, on: false });
+
+  const handleMove = (e: MouseEvent<HTMLDivElement>) => {
+    const el = visualRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width; // 0..1
+    const py = (e.clientY - rect.top) / rect.height; // 0..1
+    // 以中心为基准，最大倾斜 9deg
+    const ry = (px - 0.5) * 18;
+    const rx = -(py - 0.5) * 18;
+    setTilt({ rx, ry });
+    setGlare({ x: px * 100, y: py * 100, on: true });
+  };
+
+  const handleLeave = () => {
+    setTilt({ rx: 0, ry: 0 });
+    setGlare((g) => ({ ...g, on: false }));
+  };
+
+  const sceneStyle = {
+    transform: `perspective(1000px) rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
+  } as CSSProperties;
+  const glareStyle = {
+    "--glare-x": `${glare.x}%`,
+    "--glare-y": `${glare.y}%`,
+    opacity: glare.on ? 1 : 0,
+  } as CSSProperties;
 
   return (
     <section className="hero">
@@ -78,59 +112,68 @@ export function Hero({ data }: Props) {
           </div>
         </div>
 
-        <div className="hero-visual">
-          {data.heroImage ? (
-            // 自定义上传图片
-            <div className="hero-custom-image">
-              <img src={data.heroImage} alt="产品预览" />
-            </div>
-          ) : (
-            // 默认播放器 mockup
-            <div className="hero-mockup">
-              <div className="mockup-header">
-                <span className="mockup-dot" />
-                <span className="mockup-dot" />
-                <span className="mockup-dot" />
-                <span className="mockup-title">正在播放</span>
+        <div
+          className="hero-visual"
+          ref={visualRef}
+          onMouseMove={handleMove}
+          onMouseLeave={handleLeave}
+        >
+          <div className="tilt-scene" style={sceneStyle}>
+            {data.heroImage ? (
+              // 自定义图片链接
+              <div className="hero-custom-image">
+                <img src={data.heroImage} alt="产品预览" />
               </div>
-              <div className="mockup-body">
-                {data.visualSongs?.map((song, i) => (
-                  <div key={i} className="mockup-row">
-                    <div className="mockup-cover" />
-                    <div className="mockup-song-info">
-                      <div className="mockup-song-title">{song.title}</div>
-                      <div className="mockup-song-artist">{song.artist}</div>
-                    </div>
-                    {i === 0 ? (
-                      <div className="mockup-play-btn">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                        >
-                          <path d="M8 5v14l11-7z" />
-                        </svg>
-                      </div>
-                    ) : (
-                      <div style={{ width: 32 }} />
-                    )}
-                  </div>
-                ))}
-                <div className="mockup-progress">
-                  <div className="mockup-progress-bar" />
+            ) : (
+              // 默认播放器 mockup
+              <div className="hero-mockup">
+                <div className="mockup-header">
+                  <span className="mockup-dot" />
+                  <span className="mockup-dot" />
+                  <span className="mockup-dot" />
+                  <span className="mockup-title">正在播放</span>
                 </div>
+                <div className="mockup-body">
+                  {data.visualSongs?.map((song, i) => (
+                    <div key={i} className="mockup-row">
+                      <div className="mockup-cover" />
+                      <div className="mockup-song-info">
+                        <div className="mockup-song-title">{song.title}</div>
+                        <div className="mockup-song-artist">{song.artist}</div>
+                      </div>
+                      {i === 0 ? (
+                        <div className="mockup-play-btn">
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      ) : (
+                        <div style={{ width: 32 }} />
+                      )}
+                    </div>
+                  ))}
+                  <div className="mockup-progress">
+                    <div className="mockup-progress-bar" />
+                  </div>
+                </div>
+                {/* 随光标移动的镜面光泽 */}
+                <span className="mockup-glare" style={glareStyle} />
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="float-tag top-left">
-            <span className="float-dot" />
-            {data.floatTagLeft || "沉浸式 · 下载即用"}
-          </div>
-          <div className="float-tag bottom-right">
-            <span className="float-dot success" />
-            {data.floatTagRight || "全平台同步"}
+            <div className="float-tag top-left">
+              <span className="float-dot" />
+              {data.floatTagLeft || "沉浸式 · 下载即用"}
+            </div>
+            <div className="float-tag bottom-right">
+              <span className="float-dot success" />
+              {data.floatTagRight || "全平台同步"}
+            </div>
           </div>
         </div>
       </div>
@@ -288,6 +331,19 @@ export function Hero({ data }: Props) {
           display: flex;
           align-items: center;
           justify-content: center;
+          perspective: 1100px;
+        }
+        .tilt-scene {
+          position: relative;
+          width: 100%;
+          max-width: 520px;
+          margin: 0 auto;
+          transform-style: preserve-3d;
+          transition: transform 0.18s ease-out;
+          will-change: transform;
+        }
+        .hero-visual:not(:hover) .tilt-scene {
+          transition: transform 0.5s ease;
         }
         .hero-custom-image {
           position: relative;
@@ -407,6 +463,21 @@ export function Hero({ data }: Props) {
           background: var(--grad-btn);
           border-radius: 2px;
         }
+        /* 随光标移动的镜面光泽 */
+        .mockup-glare {
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          pointer-events: none;
+          z-index: 3;
+          background: radial-gradient(
+            360px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+            rgba(255, 255, 255, 0.18),
+            rgba(255, 255, 255, 0.06) 32%,
+            transparent 60%
+          );
+          transition: opacity 0.3s ease;
+        }
         .float-tag {
           position: absolute;
           display: flex;
@@ -421,6 +492,10 @@ export function Hero({ data }: Props) {
           border: 1px solid var(--border);
           border-radius: 10px;
           white-space: nowrap;
+          /* 浮在卡片之上，随透视产生视差 */
+          transform: translateZ(60px);
+          z-index: 2;
+          box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
         }
         .float-dot {
           width: 6px;

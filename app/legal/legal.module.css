@@ -1,0 +1,179 @@
+.legalPage {
+  position: relative;
+  min-height: 100vh;
+  /* 顶部为固定导航栏让位，底部与页脚间距 */
+  padding: calc(var(--nav-h) + 56px) 0 96px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* 与首页 Hero 一致的紫色光晕 */
+.legalPage::before {
+  content: "";
+  position: absolute;
+  top: -180px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 480px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(139, 0, 255, 0.15) 0%,
+    rgba(217, 70, 239, 0.08) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.legalContainer {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+/* 头部：居中、与首页 Hero 风格同步 */
+.legalHero {
+  text-align: center;
+  padding: 16px 0 44px;
+}
+
+.legalKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-dim);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  margin-bottom: 24px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  box-shadow: 0 0 8px var(--accent-soft);
+}
+
+.legalTitle {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin: 0 0 18px;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.legalDesc {
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--text-dim);
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.legalUpdated {
+  display: inline-block;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.legalSections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.legalSection {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.legalSection:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+
+.legalSection h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 16px;
+}
+
+/* 标题前的紫色竖条点缀 */
+.legalSection h2::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--grad-btn);
+  flex-shrink: 0;
+}
+
+.legalP {
+  font-size: 14.5px;
+  line-height: 1.9;
+  color: var(--text-dim);
+  margin: 0 0 12px;
+}
+
+.legalP:last-child {
+  margin-bottom: 0;
+}
+
+.legalList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legalItem {
+  position: relative;
+  font-size: 14.5px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  padding-left: 18px;
+}
+
+.legalItem::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.75em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .legalPage {
+    padding: calc(var(--nav-h) + 32px) 0 64px;
+  }
+  .legalTitle {
+    font-size: 30px;
+  }
+  .legalSection {
+    padding: 24px;
+  }
+}

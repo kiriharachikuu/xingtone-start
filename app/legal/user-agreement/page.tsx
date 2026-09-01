@@ -6,8 +6,6 @@ export const metadata: Metadata = {
   description: "XingTone 用户协议",
 };
 
-export const dynamic = "force-dynamic";
-
 export default function UserAgreementPage() {
   return (
     <LegalPage
